@@ -15,6 +15,7 @@ def case1():
     global merkle_tree, user_input
     merkle_tree.append(Node(user_input[0]))
 
+
 def root_calc():
     global merkle_tree
     if len(merkle_tree) == 0:
