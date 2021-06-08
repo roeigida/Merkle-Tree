@@ -49,9 +49,9 @@ def case3():
     while len(root_array) > 1:
         if leaf_num % 2 == 0:
             if leaf_num != len(root_array) - 1:
-                print(root_array[leaf_num + 1].data, end=" ")
+                print("1" + root_array[leaf_num + 1].data, end=" ")
         else:
-            print(root_array[leaf_num - 1].data, end=" ")
+            print("0" + root_array[leaf_num - 1].data, end=" ")
 
         temp = []
         is_odd = bool(len(root_array) % 2)
@@ -70,8 +70,16 @@ def case4():
     global user_input
     current_hash = hashlib.sha256(user_input[0].encode('utf-8')).hexdigest()
     for i in range(2, len(user_input)):
-        print(current_hash)
-        current_hash = hashlib.sha256((str(current_hash) + str(user_input[i])).encode('utf-8')).hexdigest()
+        if user_input[i] != "":
+            if user_input[i][0] == '1':
+                hash_chaining = str(current_hash) + str(user_input[i][1:])
+            elif user_input[i][0] == '0':
+                hash_chaining = str(user_input[i][1:]) + str(current_hash)
+            else:
+                print(False)
+                return
+            current_hash = hashlib.sha256(hash_chaining.encode('utf-8')).hexdigest()
+
     print(current_hash == user_input[1])
 
 
