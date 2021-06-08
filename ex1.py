@@ -1,5 +1,13 @@
 # Tomer Shay, 323082701, Roei Gida, 322225897
+import base64
 import hashlib
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import load_pem_public_key, load_pem_private_key
 
 user_input = ""
 merkle_tree = []
@@ -84,15 +92,55 @@ def case4():
 
 
 def case5():
-    print("5")
+    # generate public and private key and convert them to pem format
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+    pem_private = private_key.private_bytes(encoding=serialization.Encoding.PEM,
+                                            format=serialization.PrivateFormat.TraditionalOpenSSL,
+                                            encryption_algorithm=serialization.NoEncryption()).decode()
+
+    public_key = private_key.public_key()
+    pem_public = public_key.public_bytes(encoding=serialization.Encoding.PEM,
+                                         format=serialization.PublicFormat.SubjectPublicKeyInfo).decode()
+    print(pem_public)
+    print(pem_private)
+
+    # def signature_verify(public_key, signature, message):
+    #     # sign text with public key and verify with the given signature
+    #     public_key = load_pem_public_key(public_key.encode(), backend=default_backend())
+    #     try:
+    #         public_key.verify(signature.encode("utf-8"), message.encode(),
+    #                           padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+    #                           hashes.SHA256())
+    #         return True
+    #     except InvalidSignature:
+    #         return False
 
 
 def case6():
-    print("6")
+    global user_input
+    root_val = root_calc()
+    input_key = user_input[0]
+
+    key = load_pem_private_key(input_key.encode("utf-8"), password=None, backend=default_backend())
+    root_signature = key.sign(root_val.encode("utf-8"), padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                                                                    salt_length=padding.PSS.MAX_LENGTH),
+                              hashes.SHA256())
+    print(base64.b64encode(root_signature).decode("utf-8"))
 
 
 def case7():
-    print("7")
+    global user_input
+    verification_key = user_input[0]
+    sign = user_input[1]
+    verification_text = user_input[2]
+    public_key = load_pem_public_key(verification_key.encode(), backend=default_backend())
+    try:
+        public_key.verify(sign.encode("utf-8"), verification_text.encode(),
+                          padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+                          hashes.SHA256())
+        return True
+    except InvalidSignature:
+        return False
 
 
 def case8():
