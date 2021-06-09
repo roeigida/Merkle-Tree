@@ -1,6 +1,7 @@
 # Tomer Shay, 323082701, Roei Gida, 322225897
 import base64
 import hashlib
+
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -101,25 +102,23 @@ def case5():
     public_key = private_key.public_key()
     pem_public = public_key.public_bytes(encoding=serialization.Encoding.PEM,
                                          format=serialization.PublicFormat.SubjectPublicKeyInfo).decode()
-    print(pem_public)
     print(pem_private)
-
-    # def signature_verify(public_key, signature, message):
-    #     # sign text with public key and verify with the given signature
-    #     public_key = load_pem_public_key(public_key.encode(), backend=default_backend())
-    #     try:
-    #         public_key.verify(signature.encode("utf-8"), message.encode(),
-    #                           padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
-    #                           hashes.SHA256())
-    #         return True
-    #     except InvalidSignature:
-    #         return False
+    print(pem_public)
 
 
 def case6():
     global user_input
     root_val = root_calc()
-    input_key = user_input[0]
+    input_key = ""
+    for s in user_input:
+        input_key += s + " "
+    input_key = list(input_key)
+    input_key[-1] = '\n'
+    input_key = "".join(input_key)
+
+    while user_input != "":
+        user_input = input()
+        input_key += user_input + '\n'
 
     key = load_pem_private_key(input_key.encode("utf-8"), password=None, backend=default_backend())
     root_signature = key.sign(root_val.encode("utf-8"), padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
@@ -130,17 +129,28 @@ def case6():
 
 def case7():
     global user_input
-    verification_key = user_input[0]
-    sign = user_input[1]
-    verification_text = user_input[2]
-    public_key = load_pem_public_key(verification_key.encode(), backend=default_backend())
+    input_key = ""
+    for s in user_input:
+        input_key += s + " "
+    input_key = list(input_key)
+    input_key[-1] = '\n'
+    input_key = "".join(input_key)
+
+    while user_input != "":
+        user_input = input()
+        input_key += user_input + '\n'
+    print("input_key" + input_key)
+    user_input = input().split(" ")
+    sign = user_input[0]
+    verification_text = user_input[1]
+    public_key = load_pem_public_key(input_key.encode(), backend=default_backend())
     try:
-        public_key.verify(sign.encode("utf-8"), verification_text.encode(),
+        public_key.verify(base64.decodebytes(sign.encode("utf-8")), verification_text.encode(),
                           padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
                           hashes.SHA256())
-        return True
+        print(True)
     except InvalidSignature:
-        return False
+        print(False)
 
 
 def case8():
