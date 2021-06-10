@@ -215,25 +215,32 @@ def case9():
 
 
 def find_sparkle_proof(digest):
-    case9()
+    global sparse_tree, default_hash
+    if not sparse_tree:
+        print(default_hash[-1], end=" ")
+        print(default_hash[-1])
+        return
+    sparse_tree.sort()
+    print(find_root(sparse_tree, 0, 0), end=" ")
+
     upper_index = digest
     if digest % 2 == 0:
         start_index = digest + 1
     else:
         start_index = digest - 1
-    for level in range(256, -1, -1):
-        print(find_root(sparse_tree, level, start_index))
-        upper_index = int(upper_index/2)
+    for level in range(256, 0, -1):
+        print(find_root(sparse_tree, level, start_index), end=" ")
+        upper_index = int(upper_index / 2)
         if upper_index % 2 == 0:
             neighbor = upper_index + 1
         else:
-            start_index = upper_index - 1
-
+            neighbor = upper_index - 1
+        start_index = neighbor*(2**(256-level-1))
 
 
 def case10():
     global sparse_tree, user_input
-    print(find_sparkle_proof(int(user_input[0], 16)))
+    find_sparkle_proof(int(user_input[0], 16))
 
 
 def case11():
