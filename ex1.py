@@ -256,11 +256,24 @@ def case10():
 
 def case11():
     global sparse_tree, user_input
-    digest = user_input[0]
+    digest = int(user_input[0], 16)
     leaf_value = user_input[1]
     user_input = user_input[2:]
     if len(user_input) == 2:
-        return user_input[0] == user_input[1] and user_input[0] == find_root()
+        print(user_input[0] == user_input[1] and user_input[0] == find_root(sparse_tree, 0, 0))
+    if len(user_input) == 257:
+        for level in range(256, 0, -1):
+            if digest % 2 == 0:
+                leaf_value = hashlib.sha256((leaf_value + user_input[256 - level + 1]).encode('utf-8')).hexdigest()
+            else:
+                leaf_value = hashlib.sha256((user_input[256 - level + 1] + leaf_value).encode('utf-8')).hexdigest()
+            digest = digest // 2
+        print(user_input[0] == leaf_value)
+    else:
+        # TODO case with 1 <proofs < 256
+        lowest_proof = len(user_input) - 2
+        for level in range(lowest_proof, -1, -1):
+
 
 
 is_init = 0
