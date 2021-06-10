@@ -255,7 +255,12 @@ def case10():
 
 
 def case11():
-    print("11")
+    global sparse_tree, user_input
+    digest = user_input[0]
+    leaf_value = user_input[1]
+    user_input = user_input[2:]
+    if len(user_input) == 2:
+        return user_input[0] == user_input[1] and user_input[0] == find_root()
 
 
 is_init = 0
