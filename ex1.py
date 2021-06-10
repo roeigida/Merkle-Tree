@@ -27,10 +27,12 @@ def case1():
     global merkle_tree, user_input
     merkle_tree.append(Node(user_input[0]))
 
+
 def myHash(value):
     hasher = hashlib.sha256()
     hasher.update(value.encode())
     return hasher.hexdigest()
+
 
 def init_default_levels():
     global default_hash
@@ -184,21 +186,22 @@ def split_list(arr, index):
 
 
 def find_root(arr, level, start_index):
-    if level == 255:
-        if (start_index + 1) in arr:
-            hashed_right = hashlib.sha256("1".encode('utf-8')).hexdigest()
-        else:
-            hashed_right = default_hash[0]
+    if level == 256:
+        # print("level: " + str(level) + ", arr " + str(arr))
+        # if (start_index + 1) in arr:
+        #     hashed_right = hashlib.sha256("1".encode('utf-8')).hexdigest()
+        # else:
+        #     hashed_right = default_hash[0]
         if start_index in arr:
-            hashed_left = hashlib.sha256("1".encode('utf-8')).hexdigest()
+            hashed_left = "1"
         else:
             hashed_left = default_hash[0]
-        return hashlib.sha256((hashed_right + hashed_left).encode('utf-8')).hexdigest()
+        return hashed_left
     if len(arr) == 0:
-        return default_hash[255-level]
+        return default_hash[-level - 1]
     left_arr, right_arr = split_list(arr, (start_index + 2 ** 256 / 2 ** (level + 1)) - 1)
-    hashed_right = find_root(right_arr, level+1, start_index + 2 ** 256 / 2 ** (level + 1))
-    hashed_left = find_root(left_arr, level+1, start_index)
+    hashed_right = find_root(right_arr, level + 1, start_index + 2 ** 256 / 2 ** (level + 1))
+    hashed_left = find_root(left_arr, level + 1, start_index)
     return hashlib.sha256((hashed_left + hashed_right).encode('utf-8')).hexdigest()
 
 
@@ -211,8 +214,26 @@ def case9():
         print(find_root(sparse_tree, 0, 0))
 
 
+def find_sparkle_proof(digest):
+    case9()
+    upper_index = digest
+    if digest % 2 == 0:
+        start_index = digest + 1
+    else:
+        start_index = digest - 1
+    for level in range(256, -1, -1):
+        print(find_root(sparse_tree, level, start_index))
+        upper_index = int(upper_index/2)
+        if upper_index % 2 == 0:
+            neighbor = upper_index + 1
+        else:
+            start_index = upper_index - 1
+
+
+
 def case10():
-    print("10")
+    global sparse_tree, user_input
+    print(find_sparkle_proof(int(user_input[0], 16)))
 
 
 def case11():
